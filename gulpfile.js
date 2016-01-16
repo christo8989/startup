@@ -1,17 +1,4 @@
-var gulp = require('gulp'),
-    sass = require('gulp-sass'),
-    babel = require('gulp-babel'),
-    jade = require('gulp-jade'),
-    cssmin = require('gulp-cssnano'),
-    jsmin = require('gulp-uglify'),
-    clean = require('gulp-rimraf'),
-    run = require('run-sequence');
-    //rename = require('gulp-rename'),
-    //concat = require('gulp-concat'),
-    //source = require('vinyl-source-stream'),
-    //browserify = require('browserify');
-    
-     
+var CNAME = 'christo8989-dev.surge.sh';
 var path = {
     prod: './prod',
     dev: './dev',
@@ -19,16 +6,26 @@ var path = {
     scripts: '/scripts',
     styles: '/styles',
     views: '/views',
-    //dscript: path.dev + path.scripts,
-    //dstyle: path.dev + path.styles,
-    //dviews: path.dev + path.views,
-    //pscripts: path.prod + path.scripts,
-    //pstyles: path.prod + path.styles,
-    //pviews: path.prod + path.views,
-    sscripts: path.src + path.scripts,
-    sstyles: path.src + path.styles,
-    sviews: path.src + path.views,
 };
+path.sscripts = path.src +  path.scripts;
+path.sstyles = path.src + path.styles;
+path.sviews = path.src + path.views;
+
+var gulp = require('gulp'),
+    sass = require('gulp-sass'),
+    babel = require('gulp-babel'),
+    jade = require('gulp-jade'),
+    cssmin = require('gulp-cssnano'),
+    jsmin = require('gulp-uglify'),
+    clean = require('gulp-rimraf'),
+    run = require('run-sequence'),
+    surge = require('gulp-surge');
+    //rename = require('gulp-rename'),
+    //concat = require('gulp-concat'),
+    //source = require('vinyl-source-stream'),
+    //browserify = require('browserify');
+    
+
 
 /* VIEWS */
 var views = 'views';
@@ -124,7 +121,7 @@ gulp.task(pclean, function () {
 var dbuild = 'dev-build',
     pbuild = 'prod-build';
 gulp.task(dbuild, function(callback) {
-    run(dclean, [views, dstyles, dscripts], callback);
+    run(dclean, [views, dstyles, dscripts], ddeploy, callback);
 });
 
 gulp.task(pbuild, function(callback) {
@@ -133,7 +130,18 @@ gulp.task(pbuild, function(callback) {
 /* BUILDS END */
 
 
+/* DEPLOY */
+var ddeploy = 'dev-deploy';
+gulp.task(ddeploy, function(callback) {
+    return surge({
+        project: path.dev,
+        domain: CNAME,
+    });
+});
+/* BUILDS END */
 
-gulp.task('default', ['watch'], function() {
+
+
+gulp.task('default', [ddeploy], function() {
   // place code for your default task here
 });
