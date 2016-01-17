@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # Initialize gulp #
-sh init-gulp.sh
+sh ./shell_scripts/init-gulp.sh
 
 # Initialize git #
-sh init-git.sh
+sh ./shell_scripts/init-git.sh
 
 # Initialize surge #
-sh init-surge.sh $1
+sh ./shell_scripts/init-surge.sh $1
