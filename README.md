@@ -2,6 +2,7 @@
 
 ## Running init
 `sh ./init.sh [cname]`
+
 Ex: `sh ./init.sh christo8989-dev`
 
 The `cname` is the cdn location for your static development website.
