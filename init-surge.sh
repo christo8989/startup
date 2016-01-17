@@ -4,10 +4,8 @@ echo '[start] Installing surge'
 npm install -g surge
 echo '[end] Installing surge'
 
-# Promp User for surge CNAME #
-echo
-read -p 'What is your dev site? (I will append .surge.sh to it): ' CNAME
-CNAME="$CNAME.surge.sh"
+# Create CNAME from param1 #
+CNAME="$1.surge.sh"
 firstLine="var CNAME = '$CNAME';"
 
 # Replace the first line of the gulpfile #
@@ -17,4 +15,8 @@ $firstLine
 " gulpfile.js
 
 # Run surge #
- surge ./ $CNAME
+mkdir ./dev
+echo 'Succesfully created the project. :)' > ./dev/index.html
+surge ./dev $CNAME
+ 
+echo

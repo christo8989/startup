@@ -22,3 +22,4 @@ git alias
 echo
 echo '[end] Add git aliases'
 
+echo
