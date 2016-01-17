@@ -15,6 +15,7 @@ $firstLine
 " gulpfile.js
 
 # Run surge #
+# Eventually, I should run gulp here. (dev-build is the default)
 mkdir ./dev
 echo 'Succesfully created the project. :)' > ./dev/index.html
 surge ./dev $CNAME
