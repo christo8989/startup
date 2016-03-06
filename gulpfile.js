@@ -1,4 +1,4 @@
-var CNAME = '~-dev.surge.sh';
+var CNAME = '~.surge.sh';
 var path = {
     prod: './prod',
     dev: './dev',
