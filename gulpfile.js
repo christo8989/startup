@@ -1,4 +1,4 @@
-var CNAME = '~.surge.sh';
+var CNAME = 'christo8989-dev.surge.sh';
 var path = {
     prod: './prod',
     dev: './dev',
@@ -18,7 +18,7 @@ path.simages = path.src + path.images;
 
 var gulp = require('gulp'),
     sass = require('gulp-sass'),
-    //babel = require('gulp-babel'),
+    babel = require('gulp-babel'),
     jade = require('gulp-jade'),
     cssmin = require('gulp-cssnano'),
     jsmin = require('gulp-uglify'),
@@ -80,14 +80,14 @@ var dscripts = 'dev-scripts',
     pscripts = 'prod-scripts';
 gulp.task(dscripts, function() {
     return gulp.src([path.jquery, path.sscripts + '/main.js', path.sscripts + '/*.js'])
-    //.pipe(babel({ presets: ['es2015'] }))
+    .pipe(babel({ presets: ['es2015'] }))
     .pipe(concat('app.js'))
     .pipe(gulp.dest(path.dev));
 });
 
 gulp.task(pscripts, function() {
     return gulp.src([path.jquery, path.sscripts + '/main.js', path.sscripts + '/*.js'])
-    //.pipe(babel({ presets: ['es2015'] }))
+    .pipe(babel({ presets: ['es2015'] }))
     .pipe(concat('app.js'))
     .pipe(jsmin())
     .pipe(gulp.dest(path.prod));
@@ -97,8 +97,19 @@ gulp.task(pscripts, function() {
 
 
 /* IMAGES */
-var images = 'images';
-gulp.task(images, function() {
+var dimages = 'dev-images',
+    pimages = 'prod-images';
+gulp.task(dimages, function() {
+    return gulp.src(path.simages + '/*')
+		.pipe(imagemin({
+			progressive: true,
+			svgoPlugins: [{removeViewBox: false}],
+			use: [pngquant()]
+		}))
+		.pipe(gulp.dest(path.dev));
+});
+
+gulp.task(pimages, function() {
     return gulp.src(path.simages + '/*')
 		.pipe(imagemin({
 			progressive: true,
@@ -114,7 +125,7 @@ gulp.task(images, function() {
 /* WATCH */
 
 gulp.task('watch', function() {
-    gulp.watch(path.sviews + '/**/*', [views]);
+    gulp.watch(path.sviews + '/**/*', [dviews]);
     gulp.watch(path.sscripts + '/**/*', [dscripts]);
     gulp.watch(path.sstyles + '/**/*', [dstyles]);
     //process.stdout.write('surge ./PROD/');
@@ -131,12 +142,12 @@ gulp.task('clean', function (callback) {
 });
 
 gulp.task(dclean, function () {
-    gulp.src(path.dev, { read: false })
+    return gulp.src(path.dev, { read: false })
         .pipe(clean());
 });
 
 gulp.task(pclean, function () {
-    gulp.src(path.prod, { read: false })
+    return gulp.src(path.prod, { read: false })
         .pipe(clean());
 });
 /* CLEAN END */
@@ -167,16 +178,16 @@ gulp.task(pdeploy, function() {
 var dbuild = 'dev-build',
     pbuild = 'prod-build';
 gulp.task(dbuild, function(callback) {
-    run(dclean, [dviews, images, dstyles, dscripts], ddeploy, callback);
+    run(dclean, [dviews, dimages, dstyles, dscripts], ddeploy, callback);
 });
 
 gulp.task(pbuild, function(callback) {
-    run(pclean, [pviews, images, pstyles, pscripts], callback);
+    run(pclean, [pviews, pimages, pstyles, pscripts], pdeploy, callback);
 });
 /* BUILDS END */
 
 
 
-gulp.task('default', [ddeploy], function() {
+gulp.task('default', [dbuild], function() {
   // place code for your default task here
 });
