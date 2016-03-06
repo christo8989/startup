@@ -1,4 +1,4 @@
-var CNAME = 'christo8989-dev.surge.sh';
+var CNAME = '~.surge.sh';
 var path = {
     prod: './prod',
     dev: './dev',
@@ -6,30 +6,35 @@ var path = {
     scripts: '/scripts',
     styles: '/styles',
     views: '/views',
+    images: '/media',
+    
+    jquery: './node_modules/jquery/dist/jquery.min.js',
+    normalizecss: './node_modules/normalize.css/normalize.css',
 };
 path.sscripts = path.src +  path.scripts;
 path.sstyles = path.src + path.styles;
 path.sviews = path.src + path.views;
+path.simages = path.src + path.images;
 
 var gulp = require('gulp'),
     sass = require('gulp-sass'),
-    babel = require('gulp-babel'),
+    //babel = require('gulp-babel'),
     jade = require('gulp-jade'),
     cssmin = require('gulp-cssnano'),
     jsmin = require('gulp-uglify'),
+    imagemin = require('gulp-imagemin'),
     clean = require('gulp-rimraf'),
     run = require('run-sequence'),
-    surge = require('gulp-surge');
-    //rename = require('gulp-rename'),
-    //concat = require('gulp-concat'),
-    //source = require('vinyl-source-stream'),
-    //browserify = require('browserify');
+    surge = require('gulp-surge'),
+    concat = require('gulp-concat'),
+    pngquant = require('imagemin-pngquant');
     
 
 
 /* VIEWS */
-var views = 'views';
-gulp.task(views, function() {
+var dviews = 'dev-views',
+    pviews = 'prod-views';
+gulp.task(dviews, function() {
     var YOUR_LOCALS = {};
     return gulp.src(path.sviews + '/*.jade')
     .pipe(jade({
@@ -37,7 +42,36 @@ gulp.task(views, function() {
     }))
     .pipe(gulp.dest(path.dev));
 });
+
+gulp.task(pviews, function() {
+    var YOUR_LOCALS = {};
+    return gulp.src(path.sviews + '/*.jade')
+    .pipe(jade({
+        locals: YOUR_LOCALS
+    }))
+    .pipe(gulp.dest(path.prod));
+});
 /* VIEWS END */
+
+
+/* CSS */
+var dstyles = 'dev-styles',
+    pstyles = 'prod-styles';
+gulp.task(dstyles, function() {
+    return gulp.src([path.normalizecss, path.sstyles + '/*.scss'])
+    .pipe(sass().on('error', sass.logError))
+    .pipe(concat('app.css'))
+    .pipe(gulp.dest(path.dev));
+});
+
+gulp.task(pstyles, function() {
+    return gulp.src(path.sstyles + '/*.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(concat('app.css'))
+    .pipe(cssmin())
+    .pipe(gulp.dest(path.prod));
+});
+/* CSS END */
 
 
 
@@ -45,44 +79,35 @@ gulp.task(views, function() {
 var dscripts = 'dev-scripts',
     pscripts = 'prod-scripts';
 gulp.task(dscripts, function() {
-    return gulp.src(path.sscripts + '/*.js')
-    .pipe(babel({ presets: ['es2015'] }))
+    return gulp.src([path.jquery, path.sscripts + '/main.js', path.sscripts + '/*.js'])
+    //.pipe(babel({ presets: ['es2015'] }))
+    .pipe(concat('app.js'))
     .pipe(gulp.dest(path.dev));
 });
 
 gulp.task(pscripts, function() {
-    return gulp.src(path.sscripts + '/*.js')
-    .pipe(babel({ presets: ['es2015'] }))
-    //concat all javascript files?
+    return gulp.src([path.jquery, path.sscripts + '/main.js', path.sscripts + '/*.js'])
+    //.pipe(babel({ presets: ['es2015'] }))
+    .pipe(concat('app.js'))
     .pipe(jsmin())
     .pipe(gulp.dest(path.prod));
 });
 /* JAVASCRIPT END */
 
 
-/* CSS */
-var dstyles = 'dev-styles',
-    pstyles = 'prod-styles';
-gulp.task(dstyles, function() {
-    return gulp.src(path.sstyles + '/*.scss')
-    .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest(path.dev));
-    
-    // return gulp.src(['./node_modules/normalize.css/normalize.css', './DEV/css/*.css'])
-    // .pipe(concat('app.min.css'))
-    // .pipe(cssmin())
-    // //.pipe(rename({suffix:'.min'}))
-    // .pipe(gulp.dest('./PROD/'));
-});
 
-gulp.task(pstyles, function() {
-    return gulp.src(path.sstyles + '/*.scss')
-    .pipe(sass().on('error', sass.logError))
-    //concat all css files?
-    .pipe(cssmin())
-    .pipe(gulp.dest(path.prod));
+/* IMAGES */
+var images = 'images';
+gulp.task(images, function() {
+    return gulp.src(path.simages + '/*')
+		.pipe(imagemin({
+			progressive: true,
+			svgoPlugins: [{removeViewBox: false}],
+			use: [pngquant()]
+		}))
+		.pipe(gulp.dest(path.prod));
 });
-/* CSS END */
+/* IMAGE END */
 
 
 
@@ -117,26 +142,36 @@ gulp.task(pclean, function () {
 /* CLEAN END */
 
 
-/* BUILDS */
-var dbuild = 'dev-build',
-    pbuild = 'prod-build';
-gulp.task(dbuild, function(callback) {
-    run(dclean, [views, dstyles, dscripts], ddeploy, callback);
-});
-
-gulp.task(pbuild, function(callback) {
-    run(pclean, [views, pstyles, pscripts], callback);
-});
-/* BUILDS END */
-
 
 /* DEPLOY */
-var ddeploy = 'dev-deploy';
-gulp.task(ddeploy, function(callback) {
+var ddeploy = 'dev-deploy',
+    pdeploy = 'prod-deploy';
+gulp.task(ddeploy, function() {
     return surge({
         project: path.dev,
         domain: CNAME,
     });
+});
+
+gulp.task(pdeploy, function() {
+    return surge({
+        project: path.prod,
+        domain: CNAME,
+    });
+});
+/* DEPLOY END */
+
+
+
+/* BUILDS */
+var dbuild = 'dev-build',
+    pbuild = 'prod-build';
+gulp.task(dbuild, function(callback) {
+    run(dclean, [dviews, images, dstyles, dscripts], ddeploy, callback);
+});
+
+gulp.task(pbuild, function(callback) {
+    run(pclean, [pviews, images, pstyles, pscripts], callback);
 });
 /* BUILDS END */
 
