@@ -1,0 +1,93 @@
+@import 'variables';
+@import 'mixins';
+
+// NORMALIZE \\
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size:$font-normal;
+    background-color: $white;
+    margin:0;
+    padding:0;
+}
+
+
+// CONTAINERS \\
+.container {
+    width: 100%;
+    min-width:$min-width;
+}
+
+.half-container {
+    width: 48%;
+    padding:0 2%;
+    box-sizing:border-box;
+    float:left;
+}
+
+.outer-container {
+    width:$min-width;
+    margin: 0 auto;
+}
+
+.inner-container {
+    width: 100%;
+    padding: 20px;
+    box-sizing:border-box;
+}
+
+    
+.image {
+    width:100%;
+    display:block;
+}
+
+
+// LAYOUT \\
+.center {
+    text-align: center;
+    margin: inherit auto;
+}
+
+.no-margin {
+    margin:0;
+}
+
+.no-top-margin {
+    margin-top:0;
+}
+
+.no-bottom-margin {
+    margin-bottom:0;
+}
+
+.float-right {
+    float:right;
+}
+
+
+// FONTS \\
+.font-largest {
+    font-size:$font-largest;
+}
+
+.font-small {
+    font-size:$font-small;
+}
+
+
+// COLORS \\
+.black {
+    background-color:$black;
+}
+
+
+// HEADER \\
+#header {
+    //Empty
+}
+
+
+// FOOTER \\
+#footer {
+    position:relative;
+}

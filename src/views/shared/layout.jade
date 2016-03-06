@@ -1,0 +1,15 @@
+doctype
+html
+    head
+        title Project Title
+        include styles
+        block page-styles
+        meta(name="viewport",content="width=device-width")
+        block page-meta
+    body
+        include header
+        .container
+            block main
+    include scripts
+    block page-scripts
+    include footer
