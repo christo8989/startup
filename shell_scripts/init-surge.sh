@@ -1,8 +1,4 @@
 #!/bin/sh
-# Install Surge #
-echo '[start] Installing surge'
-npm install -g surge
-echo '[end] Installing surge'
 
 # Create CNAME from param1 #
 CNAME="$1.surge.sh"
