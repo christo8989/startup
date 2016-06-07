@@ -1,6 +1,8 @@
 #!/bin/sh
 # Git Global Configuration
 git config --global core.editor "'C:/Program Files (x86)/Notepad++/notepad++.exe' -multiInst -nosession"
+git config --global credential.helper 'store --file ~/.git-credentials'
+git credential fill
 
 
 # Initialize Aliases for git #
