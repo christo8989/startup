@@ -1,6 +1,7 @@
 # Custom
 dev
 prod
+*.git-credentials
 
 
 # SASS
