@@ -1,4 +1,8 @@
 #!/bin/sh
+# Git Global Configuration
+git config --global core.editor "'C:/Program Files (x86)/Notepad++/notepad++.exe' -multiInst -nosession"
+
+
 # Initialize Aliases for git #
 echo '[start] Add git aliases'
 
